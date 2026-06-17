@@ -829,7 +829,7 @@ function visitorHide(){ if(!visitor)return; visitor.visible=false; visitorPhase=
 function nextFloor(skipIntro){
   state.locked=true; setButtons(false);
   resetRoomState();
-  state.anomalyActive = Math.random()<0.5;
+  state.anomalyActive = Math.random()<0.6;   // 異変の出現率（0.6＝60%）
   if(state.anomalyActive){ const a=anomalies[Math.floor(Math.random()*anomalies.length)]; state.currentAnomaly=a; a.apply(); }
   else state.currentAnomaly=null;
   applyRoom();
