@@ -684,8 +684,8 @@ sceneEl.addEventListener('pointerdown',e=>{dragging=true;lx=e.clientX;ly=e.clien
 window.addEventListener('pointerup',()=>dragging=false);
 window.addEventListener('pointermove',e=>{
   if(!dragging||scareActive)return;
-  yaw=yaw-(e.clientX-lx)*0.005;   // 360°自由回転（制限なし）
-  pitch=clamp(pitch-(e.clientY-ly)*0.005,-0.55,0.5);
+  yaw=yaw+(e.clientX-lx)*0.005;   // ドラッグは上下左右反転（キーボードは現状維持）
+  pitch=clamp(pitch+(e.clientY-ly)*0.005,-0.55,0.5);
   lx=e.clientX;ly=e.clientY;applyCam();hideHint();
 });
 // キーボード
