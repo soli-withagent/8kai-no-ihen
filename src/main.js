@@ -88,10 +88,10 @@ function tone(freq,dur,type='sine',vol=0.18,delay=0,send=0.3){
 }
 function ding(mode='normal'){
   ac();
-  if(mode==='normal' && playBuf('ding',{vol:0.9})) return;
-  if(mode!=='normal' && playBuf('ding_bad',{vol:0.9})) return;
+  if(mode==='normal' && playBuf('ding',{vol:0.4})) return;
+  if(mode!=='normal' && playBuf('ding_bad',{vol:0.45})) return;
   let n=[1318.5,1046.5]; if(mode==='reverse')n=[1046.5,1318.5]; if(mode==='dissonant')n=[1318.5,987.7];
-  n.forEach((f,i)=>{ tone(f,1.1,'sine',0.16,i*0.18,0.4); tone(f*2,0.8,'triangle',0.05,i*0.18,0.4); tone(f*3,0.5,'sine',0.02,i*0.18,0.4); });
+  n.forEach((f,i)=>{ tone(f,1.1,'sine',0.08,i*0.18,0.4); tone(f*2,0.8,'triangle',0.025,i*0.18,0.4); tone(f*3,0.5,'sine',0.01,i*0.18,0.4); });
 }
 function buzz(){ tone(110,0.55,'sawtooth',0.2,0,0.4); tone(70,0.6,'square',0.12,0.02,0.4); }
 function errorSound(){
