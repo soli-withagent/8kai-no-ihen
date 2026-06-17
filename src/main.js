@@ -19,7 +19,7 @@ const room = {
   btnCount:8, btnAllOn:false, btnLit:3, emgAlert:false,
   figOpacity:0.8, figTilt:0, figExtra:false, figEyes:false,
   posterMode:'normal', cautionHidden:false, ceilRed:false, wet:false,
-  indDown:false, indBad:false, ceilFlicker:false, ceilBlue:false,
+  indDown:false, indBad:false, ceilFlicker:false, ceilBlue:false, badChime:false,
 };
 
 /* ===================== 音声エンジン =====================
@@ -806,12 +806,13 @@ const anomalies = [
   { name:'天井灯がチラついている',     apply(){ room.ceilFlicker=true; } },
   { name:'天井灯が青白く光っている',   apply(){ room.ceilBlue=true; } },
   { name:'掲示が黒く塗り潰されている', apply(){ room.posterMode='blank'; } },
+  { name:'到着音がおかしい',          apply(){ room.badChime=true; } },
 ];
 function resetRoomState(){
   room.capacity='定員 8名 / 600kg';room.btnCount=8;room.btnAllOn=false;room.btnLit=0; // 行き先は常に8階（index0='8'）
   room.emgAlert=false;room.figOpacity=0.8;room.figTilt=0;room.figExtra=false;room.figEyes=false;
   room.posterMode='normal';room.cautionHidden=false;room.ceilRed=false;room.wet=false;
-  room.indDown=false;room.indBad=false;room.ceilFlicker=false;room.ceilBlue=false;
+  room.indDown=false;room.indBad=false;room.ceilFlicker=false;room.ceilBlue=false;room.badChime=false;
 }
 
 /* ===================== 進行 ===================== */
@@ -838,7 +839,8 @@ function nextFloor(skipIntro){
     const fn=floorName(state.floor);
     room.panelFloor=fn; drawIndicator();
     lightLevel=1;
-    if(state.anomalyActive && Math.random()<0.5){ [()=>ding('dissonant'),()=>ding('reverse'),buzz][Math.floor(Math.random()*3)](); }
+    // 到着音：異音は「到着音がおかしい」異変のときだけ（＝音が違う⟺異変）。それ以外は常に正常音
+    if(room.badChime){ (Math.random()<0.5?()=>ding('dissonant'):()=>ding('reverse'))(); }
     else ding('normal');
     openDoors();
     // 乗っていた来訪者は降車 → 入れ替わりで、この階の新しい来訪者が待つ
