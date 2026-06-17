@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>8階の異変</title>
+<link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+<div id="stage">
+  <div class="scene" id="scene">
+    <div class="miss" id="missBox">間違い <b id="missCount">0</b></div>
+    <div class="lookhint" id="lookhint">矢印キー / WASD で見回す（ドラッグも可）</div>
+    <div class="controls">
+      <button class="act act-open" id="btnExit" disabled>
+        <span class="eicon"><i class="tri pl"></i><i class="bar"></i><i class="tri pr"></i></span>
+        <span class="elabel">開</span>
+        <small>招き入れる</small>
+      </button>
+      <button class="act act-close" id="btnStay" disabled>
+        <span class="eicon"><i class="tri pr"></i><i class="bar"></i><i class="tri pl"></i></span>
+        <span class="elabel">閉</span>
+        <small>逃げる</small>
+      </button>
+    </div>
+  </div>
+  <div class="flash" id="flash"></div>
+
+  <div class="overlay" id="overlay">
+    <div class="rcard" id="resultCard">
+      <div class="rbrand">🛗 8階の異変</div>
+      <div class="rbadge" id="ovTitle">GAME OVER</div>
+      <div class="rfloor"><span id="ovBig">B1</span></div>
+      <p class="rsub" id="ovText"></p>
+      <div class="rtag" id="ovTag">#8階の異変</div>
+    </div>
+    <div class="ractions">
+      <button class="btn btn-share" id="btnShare">結果をシェア</button>
+      <button class="btn btn-retry" id="btnRetry">もう一度</button>
+    </div>
+    <p class="hint" id="ovHint">スクショ＆「#8階の異変」で到達階をシェアしてね</p>
+  </div>
+
+  <div class="overlay start" id="startScreen" style="display:flex">
+    <div class="logo"><span class="logo-8">8</span><span class="logo-rest">階の異変</span></div>
+    <p class="tag">― 扉が開くたび、それを見抜け ―</p>
+    <p>
+      エレベーターの扉が開くたび、<b>見回して</b>かごの中をよく確かめて。<br>
+      <b style="color:var(--red)">異変</b>があれば <b>「閉（逃げる）」</b>。<br>
+      何もおかしくなければ <b>「開（招き入れる）」</b>。<br><br>
+      見抜けば1階上がる。だが一度でも見誤れば、そこで終わり。<br>
+      目指すは最上階・<b style="color:var(--amber)">8階</b>。
+    </p>
+    <button class="btn" id="btnStart">乗り込む</button>
+    <p class="hint">音が出ます。イヤホン推奨。</p>
+  </div>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>

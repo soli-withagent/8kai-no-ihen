@@ -1,0 +1,14 @@
+# dependencies
+node_modules/
+
+# build output (Vercel builds from source)
+dist/
+
+# local / editor / tooling
+.DS_Store
+*.local
+.vite/
+.claude/
+
+# old prototypes (kept locally, not published)
+backup/

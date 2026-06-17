@@ -1,0 +1,130 @@
+:root{ --amber:#ffb547; --amber-glow:#ff9500; --red:#e0483d; --green:#3ec46d; }
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;height:-webkit-fill-available;overflow:hidden;overscroll-behavior:none;position:fixed;inset:0}
+body{
+  background:#0a0b0c;
+  font-family:"Helvetica Neue","Hiragino Kaku Gothic ProN",sans-serif;color:#e8eaeb;
+  display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;touch-action:none;
+}
+/* iPhoneで端から端までフル表示（dvh=アドレスバー伸縮に追従、フォールバック付き） */
+#stage{
+  position:relative;background:#0a0b0c;overflow:hidden;user-select:none;
+  width:100vw;width:100dvw;
+  height:100vh;height:-webkit-fill-available;height:100dvh;
+}
+
+.topbar{
+  position:absolute;top:0;left:0;right:0;height:60px;z-index:40;
+  background:linear-gradient(180deg,#dedbd2,#c1bdb3);border-bottom:2px solid #9a978d;
+  box-shadow:0 2px 5px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.5);
+  display:flex;align-items:center;justify-content:space-between;padding:0 16px;
+}
+.ind{display:flex;align-items:center;gap:9px}
+.ind .arrow{font-size:16px;color:#9a978d;transition:color .2s}
+.ind .arrow.on{color:#2ea257;text-shadow:0 0 8px rgba(46,162,87,.6)}
+.lcd{
+  font-family:"Courier New",monospace;font-size:28px;font-weight:bold;color:#ff7a3c;text-shadow:0 0 10px rgba(255,90,40,.7);
+  letter-spacing:2px;min-width:80px;padding:3px 10px;border-radius:3px;
+  background:linear-gradient(180deg,#161310,#241f1a);border:1px solid #3a332b;
+  box-shadow:inset 0 0 12px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.4);
+}
+.floor-label{font-size:9px;color:#6b6860;letter-spacing:3px;display:block;margin-bottom:1px}
+.mistakes{font-size:11px;color:#5a574f;text-align:right;line-height:1.3}
+.mistakes b{color:var(--red);font-size:18px;font-family:"Courier New",monospace}
+
+.scene{position:absolute;inset:0;overflow:hidden;background:#0a0b0c;cursor:grab;touch-action:none}
+.scene:active{cursor:grabbing}
+.scene canvas{display:block;width:100%;height:100%}
+.miss{
+  position:absolute;top:calc(12px + env(safe-area-inset-top));right:calc(12px + env(safe-area-inset-right));z-index:20;
+  font-size:12px;color:rgba(255,255,255,.7);background:rgba(0,0,0,.32);
+  padding:4px 11px;border-radius:13px;pointer-events:none;letter-spacing:1px;
+}
+.miss b{color:#ff7a6a;font-family:"Courier New",monospace;font-size:15px}
+.lookhint{
+  position:absolute;bottom:96px;left:50%;transform:translateX(-50%);z-index:15;
+  font-size:11px;color:rgba(255,255,255,.65);background:rgba(0,0,0,.3);padding:4px 12px;border-radius:14px;
+  pointer-events:none;transition:opacity .5s;
+}
+
+/* 操作ボタン：シーンに溶け込む半透明グラス（別枠HUDにしない） */
+.controls{
+  position:absolute;bottom:0;left:0;right:0;z-index:40;
+  display:flex;gap:12px;
+  padding:14px calc(14px + env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) calc(14px + env(safe-area-inset-left));
+  background:linear-gradient(180deg,transparent,rgba(0,0,0,.5));
+}
+/* エレベーターの「開」「閉」物理ボタン風 */
+.act{
+  flex:1;border-radius:14px;cursor:pointer;letter-spacing:1px;position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:11px 0 10px;
+  color:#f4f4f2;text-shadow:0 1px 2px rgba(0,0,0,.6);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 4px 0 rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.28), inset 0 -3px 8px rgba(0,0,0,.34);
+  transition:transform .07s,box-shadow .1s,filter .15s;
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+.act:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.2), inset 0 -2px 6px rgba(0,0,0,.4)}
+.act:disabled{opacity:.45;filter:grayscale(.35) brightness(.82);cursor:default;box-shadow:0 3px 0 rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.12)}
+/* 開閉アイコンはフォント依存をやめCSSの三角形で描画（端末で崩れない） */
+.act .eicon{display:inline-flex;align-items:center;gap:4px;height:15px}
+.act .eicon .bar{width:2px;height:15px;background:currentColor;border-radius:1px}
+.act .eicon .tri{width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent}
+.act .eicon .tri.pl{border-right:10px solid currentColor}   /* 左向き ◀ */
+.act .eicon .tri.pr{border-left:10px solid currentColor}    /* 右向き ▶ */
+.act .elabel{font-size:21px;font-weight:bold;line-height:1.05}
+.act small{font-size:10px;font-weight:normal;opacity:.82;letter-spacing:.5px}
+.act-open{background:linear-gradient(180deg,rgba(58,178,100,.42),rgba(26,116,62,.52));border-color:rgba(120,230,160,.55)}
+.act-open .eicon,.act-open .elabel{color:#eafff0;text-shadow:0 0 8px rgba(86,217,134,.5),0 1px 2px rgba(0,0,0,.6)}
+.act-close{background:linear-gradient(180deg,rgba(212,72,60,.42),rgba(138,40,34,.52));border-color:rgba(240,124,110,.55)}
+.act-close .eicon,.act-close .elabel{color:#ffe6df;text-shadow:0 0 8px rgba(224,72,61,.5),0 1px 2px rgba(0,0,0,.6)}
+
+.flash{position:absolute;inset:0;z-index:30;pointer-events:none;opacity:0;background:#000}
+
+.overlay{
+  position:absolute;inset:0;z-index:50;background:rgba(16,15,13,.94);
+  display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;gap:16px;backdrop-filter:blur(2px);
+}
+.overlay h1{font-size:26px;letter-spacing:3px}
+.overlay p{font-size:14px;color:#cfccc3;line-height:1.8}
+.big{font-size:64px;font-weight:bold;color:var(--amber);text-shadow:0 0 22px var(--amber-glow);font-family:"Courier New",monospace}
+.btn{
+  margin-top:8px;padding:15px 36px;border:none;border-radius:9px;
+  background:linear-gradient(180deg,#ffc163,var(--amber));color:#3a1c00;font-size:16px;font-weight:bold;cursor:pointer;
+  box-shadow:0 4px 0 #b87410,inset 0 1px 0 rgba(255,255,255,.4);
+}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 #b87410}
+.hint{font-size:11px;color:#8a877e;max-width:300px}
+.shareline{font-size:13px;color:#e8eaeb;background:#2a2620;padding:11px 15px;border-radius:6px;border:1px solid #4a443a}
+
+/* ===== スタート画面ロゴ ===== */
+.start .logo{font-weight:800;letter-spacing:1px;line-height:1;display:flex;align-items:baseline;gap:2px;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.start .logo-8{font-size:78px;color:var(--amber);text-shadow:0 0 26px var(--amber-glow);font-family:"Courier New",monospace}
+.start .logo-rest{font-size:34px;color:#f2efe8}
+.start .tag{font-size:13px;color:#b9b4a8;letter-spacing:2px;margin-top:-4px}
+
+/* ===== 結果カード（SNS拡散向け） ===== */
+.rcard{
+  width:min(340px,86vw);padding:22px 22px 24px;border-radius:18px;text-align:center;
+  background:linear-gradient(170deg,#1f1d1a,#16140f);
+  border:1px solid rgba(255,210,120,.16);
+  box-shadow:0 18px 50px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.rbrand{font-size:14px;font-weight:700;letter-spacing:1px;color:#e9e4d8;opacity:.9}
+.rbadge{
+  display:inline-block;margin:14px 0 6px;padding:5px 18px;border-radius:999px;
+  font-size:18px;font-weight:800;letter-spacing:3px;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);color:#fff;
+}
+.rbadge.bad{background:rgba(224,72,61,.18);border-color:rgba(224,72,61,.6);color:#ff9d92;text-shadow:0 0 12px rgba(224,72,61,.5)}
+.rbadge.good{background:rgba(62,196,109,.18);border-color:rgba(86,217,134,.6);color:#9bf0bd;text-shadow:0 0 12px rgba(62,196,109,.5)}
+.rfloor{margin:4px 0 10px}
+.rfloor span{font-size:66px;font-weight:800;color:var(--amber);text-shadow:0 0 24px var(--amber-glow);font-family:"Courier New",monospace}
+.rsub{font-size:13px;color:#d3cfc5;line-height:1.7}
+.rsub b{font-family:"Courier New",monospace}
+.rtag{margin-top:14px;font-size:13px;font-weight:700;color:#8fb7ff;letter-spacing:1px}
+.ractions{display:flex;gap:12px;margin-top:18px}
+.btn-share{background:linear-gradient(180deg,#7db4ff,#3f7fe0);color:#06234f;box-shadow:0 4px 0 #2a5bb0,inset 0 1px 0 rgba(255,255,255,.4)}
+.btn-share:active{box-shadow:0 1px 0 #2a5bb0}
+.btn-retry{background:linear-gradient(180deg,#ffc163,var(--amber));color:#3a1c00;box-shadow:0 4px 0 #b87410,inset 0 1px 0 rgba(255,255,255,.4)}
+.ractions .btn{margin-top:0;padding:13px 22px;font-size:15px}
