@@ -11,6 +11,7 @@ import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 const $ = id => document.getElementById(id);
 const state = { floor:0, miss:0, anomalyActive:false, currentAnomaly:null, locked:true };
 const TARGET = 8;
+let deaths = 0;   // クリアまでのゲームオーバー回数（リトライをまたいで積算、クリアで0に戻す）
 const floorName = f => f===0 ? 'B1' : f+'F';
 
 /* かご内の見た目状態（異変はここを変える） */
@@ -911,6 +912,7 @@ function endVisitorScare(){
   },200);
 }
 function showVisitorLost(){
+  deaths++;
   const reached=floorName(state.floor);
   $('ovTitle').textContent='見殺し'; $('ovTitle').className='rbadge bad';
   $('ovBig').textContent=reached;
@@ -974,6 +976,7 @@ function endScare(){
 let shareText='';
 function showResult(){ $('overlay').style.display='flex'; }
 function showCaught(){
+  deaths++;
   const reached=floorName(state.floor);
   $('ovTitle').textContent='GAME OVER'; $('ovTitle').className='rbadge bad';
   $('ovBig').textContent=reached;
@@ -987,10 +990,15 @@ function showCaught(){
 function win(){
   $('ovTitle').textContent='CLEAR'; $('ovTitle').className='rbadge good';
   $('ovBig').textContent='8F';
-  $('ovText').innerHTML="全8階を見抜いて脱出成功！<br>見落とし <b style='color:var(--red)'>"+state.miss+"</b> 回。";
+  $('ovText').innerHTML="全8階を見抜いて脱出成功！<br>"+(deaths===0
+    ? "<b style='color:#9bf0bd'>一度も失敗せず</b>クリア！"
+    : "ゲームオーバー <b style='color:#ffcf5a'>"+deaths+"</b> 回でクリア。");
   $('ovHint').textContent='自慢していい記録。スクショ＆「#8階の異変」でシェアしよう';
-  shareText=(state.miss===0?'『8階の異変』ノーミスで全8階クリア！':'『8階の異変』全8階クリア（見落とし'+state.miss+'回）！')+' あなたは8階まで辿り着ける？ #8階の異変';
+  shareText=(deaths===0
+    ? '『8階の異変』失敗ゼロで全8階クリア！'
+    : '『8階の異変』ゲームオーバー'+deaths+'回で全8階クリア！')+' あなたは何回で辿り着ける？ #8階の異変';
   showResult();
+  deaths=0;   // クリアしたので次の挑戦は0から
 }
 
 function shareResult(){
@@ -1005,7 +1013,7 @@ function beginGame(){
   state.floor=0; state.miss=0; $('missCount').textContent=0;
   nextFloor();
 }
-$('btnStart').onclick=()=>{ $('startScreen').style.display='none'; beginGame(); };
+$('btnStart').onclick=()=>{ deaths=0; $('startScreen').style.display='none'; beginGame(); };
 $('btnRetry').onclick=()=>{ $('overlay').style.display='none'; beginGame(); };
 $('btnShare').onclick=shareResult;
 $('btnExit').onclick=()=>judge(true);
@@ -1034,6 +1042,7 @@ window.__dbg = {
   taken:()=>{ state.locked=false; state.anomalyActive=false; if(visitor){visitor.position.copy(VIS_WAIT);visitor.rotation.set(0,visitorFaceIn,0);visitor.visible=true;visitorPhase='waiting';} visitorTaken(); },
   takenState:()=>({visitorScare, creatureVis:creature&&creature.visible, visPhase:visitorPhase, overlay:getComputedStyle($('overlay')).display, title:$('ovTitle').textContent}),
   lost:()=>{ try{ showVisitorLost(); return 'ok:'+$('overlay').style.display; }catch(e){ return 'ERR:'+String(e); } },
+  deathCount:()=>deaths, winNow:()=>{ try{ win(); return 'ok'; }catch(e){ return 'ERR:'+String(e); } },
   blocked:()=>{ state.locked=false; if(visitor){visitor.position.copy(VIS_WAIT);visitor.visible=true;visitorPhase='waiting';} closeDoors(); blockedLunge(); },
   creaY:()=>creature&&({y:+creature.position.y.toFixed(2),z:+creature.position.z.toFixed(2),s:+creature.scale.x.toFixed(2),vis:creature.visible}),
   faceTest:()=>{ scareActive=false;visitorScare=false;blockedScare=false; creature.visible=true; creature.position.set(0,-0.35,0.20); creature.scale.setScalar(1.0); creature.rotation.set(0,0,0); pitch=0;yaw=0;applyCam(); ceilLight.intensity=2.0; },
